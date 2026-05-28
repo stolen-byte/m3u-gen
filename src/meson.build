@@ -3,6 +3,7 @@ core_sources = files(
 	'dir-iterator.c',
 	'dir.c',
 	'error.c',
+	'm3u.c',
 	'mem.c',
 	'strbuf.c',
 	'string-utils.c',

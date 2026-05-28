@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 unit_tests = [
 	'dir-tests.c',
+	'm3u-tests.c',
 	'strbuf-tests.c',
 	'string-utils-tests.c',
 ]
