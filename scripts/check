@@ -1,0 +1,61 @@
+#!/usr/bin/env sh
+set -e
+
+# ================================================================================
+build_dir=./build/
+
+# ================================================================================
+# all output to stderr
+exec 1>&2
+
+if [ $# -gt 0 ]; then
+	build_dir="$1"
+	shift
+fi
+
+compdb=${build_dir}/compile_commands.json
+if ! test -f "$compdb"; then
+	printf '"%s" doesnt exist, please run configure before using this script.\n' "$compdb"
+	exit 1
+fi
+
+# do not use `--Werror` with clang-format, as the ubuntu versions used in some CI runners
+# are notoriously buggy, and give out false errors.
+echo 'checking formatting...'
+git ls-files -z "**/*.h" "**/*.c" | xargs -0 clang-format --dry-run
+
+# check we're not bypassing any compat headers
+errors=$(mktemp) || exit 1
+trap 'rm -f "$errors"' EXIT TERM QUIT
+
+echo 'checking compat headers...'
+git ls-files '**/*.h' '**/*.c' ':!:tests/' ':!:src/compat/' | while IFS= read -r path; do
+	grep '#include <' "$path" | while IFS= read -r inc; do
+		inc=${inc#*<}
+		inc=${inc%%>*}
+		src=${inc%%/*}
+		if [ "$src" = "compat" ]; then
+			continue
+		fi
+		hdr=${inc##*/}
+		if test -f "src/compat/${hdr}"; then
+			printf "%s: warning: include '%s' bypasses compat header, use '%s' instead.\n" "$path" "$inc" "compat/$hdr" >>"$errors"
+		fi
+	done
+done
+
+if test -s "$errors"; then
+	cat "$errors"
+	exit 1
+fi
+
+# check headers
+echo 'checking headers...'
+git ls-files -z "**/*.h" |
+	xargs -0 clang-tidy -p "${build_dir}" --warnings-as-errors="*"
+
+# check only *used* sources, so we don't get errors from unused compat source files
+echo 'checking sources...'
+jq -r '.[].file' "$compdb" |
+	sed 's|^\.*/||' |
+	xargs -r clang-tidy -p "${build_dir}" --warnings-as-errors="*"

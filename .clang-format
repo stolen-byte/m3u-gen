@@ -1,0 +1,234 @@
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+---
+BasedOnStyle: LLVM
+
+# ==================================================
+Language: Cpp
+ColumnLimit: 110
+Standard: Latest
+LineEnding: LF
+UseTab: ForIndentation
+IndentWidth: 2
+TabWidth: 2
+PPIndentWidth: -1
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 2
+AccessModifierOffset: -1
+InsertNewlineAtEOF: true
+DisableFormat: false
+
+# ==================================================
+# Macros
+# ==================================================
+# MacroBlockBegin: ''
+# MacroBlockEnd: ''
+# Broken for function-like macros
+AttributeMacros: []
+ForEachMacros: ['foreach_test']
+IfMacros: []
+NamespaceMacros: []
+StatementAttributeLikeMacros: []
+StatementMacros: []
+TypenameMacros: []
+Macros: []
+WhitespaceSensitiveMacros: []
+
+# ==================================================
+# Alignment
+# ==================================================
+AlignAfterOpenBracket: Align
+AlignArrayOfStructures: Left
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+AlignConsecutiveBitFields:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
+  AlignCaseColons: false
+AlignEscapedNewlines: Left
+AlignOperands: AlignAfterOperator
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 0
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowBreakBeforeNoexceptSpecifier: Never
+DerivePointerAlignment: false
+PointerAlignment: Left
+ReferenceAlignment: Left
+QualifierAlignment: Custom
+QualifierOrder: ['static', 'inline', 'constexpr', 'const', 'volatile', 'restrict', 'type']
+
+# ==================================================
+# Breaks
+# ==================================================
+EmptyLineAfterAccessModifier: Never
+EmptyLineBeforeAccessModifier: LogicalBlock
+KeepEmptyLinesAtEOF: false
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+AlwaysBreakAfterReturnType: All
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: Yes
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: true
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+  #BreakAdjacentStringLiterals: false
+BreakAfterAttributes: Always
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeConceptDeclarations: Always
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+BreakStringLiterals: true
+CompactNamespaces: false
+ReflowComments: true
+RequiresClausePosition: OwnLine
+RequiresExpressionIndentation: OuterScope
+SeparateDefinitionBlocks: Leave
+
+# ==================================================
+# Indentation
+# ==================================================
+IndentAccessModifiers: false
+IndentCaseBlocks: false
+IndentCaseLabels: false
+IndentExternBlock: NoIndent
+IndentGotoLabels: false
+IndentPPDirectives: BeforeHash
+IndentRequiresClause: true
+IndentWrappedFunctionNames: false
+LambdaBodyIndentation: Signature
+NamespaceIndentation: None
+
+# ==================================================
+# Spaces
+# ==================================================
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceAroundPointerQualifiers: Default
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterForeachMacros: true
+  AfterFunctionDefinitionName: false
+  AfterFunctionDeclarationName: false
+  AfterIfMacros: true
+  AfterOverloadedOperator: false
+  AfterRequiresInClause: true
+  AfterRequiresInExpression: true
+  BeforeNonEmptyParentheses: false
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: false
+SpaceInEmptyBlock: false
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: Never
+SpacesInContainerLiterals: false
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: -1
+SpacesInSquareBrackets: false
+BitFieldColonSpacing: Both
+SpacesInParens: Never
+
+# ==================================================
+# Separators
+# ==================================================
+IntegerLiteralSeparator:
+  Binary: -1
+  Hex: -1
+  Decimal: -1
+
+# ==================================================
+# Misc
+# ==================================================
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortCompoundRequirementOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: false
+FixNamespaceComments: true
+BinPackArguments: false
+BinPackParameters: false
+PackConstructorInitializers: Never
+Cpp11BracedListStyle: true
+InsertBraces: false
+RemoveBracesLLVM: false
+RemoveParentheses: Leave
+RemoveSemicolon: false
+ShortNamespaceLines: 1
+PenaltyBreakAssignment: 10
+PenaltyBreakBeforeFirstCallParameter: 9999 # 30
+PenaltyBreakComment: 10
+PenaltyBreakFirstLessLess: 0
+#PenaltyBreakOpenParenthesis
+#PenaltyBreakScopeResolution
+#PenaltyBreakTemplateDeclaration
+PenaltyBreakString: 10
+PenaltyExcessCharacter: 100
+#PenaltyIndentedWhitespace
+PenaltyReturnTypeOnItsOwnLine: 0
+
+# ==================================================
+# Includes / Usings
+# ==================================================
+IncludeBlocks: Regroup
+SortIncludes: CaseSensitive
+SortUsingDeclarations: Lexicographic
+# Priority = Group Order
+# SortPriority = Individual Order Within Groups
+IncludeCategories:
+  - Regex: '^"config\.h"'
+    Priority: 0
+    SortPriority: -999
+  - Regex: '^"common\.h(pp)?"'
+    Priority: 0
+    SortPriority: 0
+  # User Includes
+  - Regex: '^".*\.h(pp)?"'
+    Priority: 0
+    SortPriority: 100
+  # Matches all std includes
+  - Regex: '^<.*\.h>'
+    Priority: 400
+    SortPriority: 0
+  # - Regex: '^<[a-z_]+>$'
+  #   Priority: 400
+  #   SortPriority: 0
+  # Order unknown includes at end
+  - Regex: '.*'
+    Priority: 500
+    SortPriority: 0

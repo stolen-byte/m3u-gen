@@ -1,0 +1,30 @@
+# Editor
+.vs/
+.vscode/
+.zed/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+
+# OS
+.DS_STORE
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+
+# merge conflict temp files
+*.orig
+
+# Build Artifacts
+*.tar.*
+*.zip
+*.log
+build/
+/perf.*
+/dhat.out.*
+

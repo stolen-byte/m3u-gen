@@ -1,0 +1,74 @@
+---
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle: none
+HeaderFileExtensions:
+  - h
+ImplementationFileExtensions:
+  - c
+Checks: >-
+  bugprone-*,
+  cert-*,
+  cppcoreguidelines-*
+  concurrency-*,
+  misc-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  clang-analyzer-core.uninitialized.CapturedBlockVariable,
+  clang-analyzer-nullability.NullableReturnedFromNonnull,
+  clang-analyzer-optin.performance.Padding,
+  clang-analyzer-valist.CopyToSelf,
+  clang-analyzer-valist.Unterminated,
+  portability-simd-intrinsics,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-assignment-in-if-condition,
+  -bugprone-suspicious-include,
+  -bugprone-multi-level-implicit-pointer-conversion,
+  -bugprone-bool-pointer-implicit-conversion,
+  -bugprone-suspicious-string-compare,
+  -bugprone-sizeof-expression,
+  -cert-err33-c,
+  -cert-dcl16-c,
+  -cert-oop54-cpp,
+  -cert-err58-cpp,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  -clang-analyzer-valist.Uninitialized,
+  -misc-no-recursion,
+  -misc-include-cleaner,
+  -misc-use-anonymous-namespace,
+  -modernize-use-nodiscard,
+  -modernize-avoid-c-arrays,
+  -modernize-avoid-c-style-cast,
+  -modernize-use-default-member-init,
+  -modernize-use-designated-initializers,
+  -modernize-macro-to-enum,
+  -performance-no-int-to-ptr,
+  -readability-braces-around-statements,
+  -readability-identifier-length,
+  -readability-implicit-bool-conversion,
+  -readability-named-parameter,
+  -readability-isolate-declaration,
+  -readability-magic-numbers,
+  -readability-function-cognitive-complexity,
+  -readability-function-size,
+  -readability-uppercase-literal-suffix,
+  -readability-avoid-unconditional-preprocessor-if,
+  -readability-redundant-access-specifiers,
+  -readability-qualified-auto,
+  -readability-redundant-member-init,
+  -readability-use-concise-preprocessor-directives,
+CheckOptions:
+  portability-simd-intrinsics.Suggest: true
+  readability-magic-numbers.IgnorePowersOf2IntegerValues: true
+  readability-identifier-naming.EnumCase: lower_case
+  readability-identifier-naming.EnumConstantCase: UPPER_CASE
+  readability-identifier-naming.StructCase: lower_case
+  readability-identifier-naming.FunctionCase: lower_case
+  readability-identifier-naming.ParameterCase: lower_case
+  # constants
+  readability-identifier-naming.GlobalConstantCase: lower_case
+  # readability-identifier-naming.GlobalConstantPrefix: g_
+  # ignore single letter constants
+  readability-identifier-naming.GlobalConstantIgnoredRegexp: '^[a-zA-Z]$'
+  # readability-identifier-naming.MacroDefinitionCase: UPPER_CASE

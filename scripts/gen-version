@@ -1,0 +1,61 @@
+#!/usr/bin/env sh
+# shellcheck disable=SC2016
+set -e
+
+# =============================================================================
+GIT_EXPORT_TAG='$Format:%(describe:abbrev=7,tags=true)$'
+GIT_EXPORT_COMMIT='$Format:%h$'
+GIT_EXPORT_BRANCH='$Format:%(decorate:prefix=,suffix=,separator=:,pointer=:,tag=)$'
+
+nl='
+'
+
+# ==============================================================================
+case "$GIT_EXPORT_COMMIT" in
+\$*)
+	if ! test -d '.git'; then
+		echo 'not a dist tarball, and not a git repo, cant determine version.' >&2
+		exit 1
+	fi
+
+	# git checkout
+	if full_tag=$(git describe --tags --exact-match 2>/dev/null); then
+		version=$full_tag
+	else
+		commit=$(git rev-parse --short=7 HEAD)
+		branch=$(git rev-parse --abbrev-ref HEAD)
+		if last_tag=$(git describe --abbrev=0 HEAD 2>/dev/null); then
+			version=$last_tag
+		else
+			version="0.0.1"
+		fi
+		version="${version}+${branch}-${commit}"
+	fi
+	;;
+*)
+	# generated source tarball
+	version=${GIT_EXPORT_TAG%-*-g*}
+	if test -z "$version"; then
+		version="0.0.1"
+	fi
+
+	if [ "$version" != "$GIT_EXPORT_TAG" ]; then
+		branch=${GIT_EXPORT_BRANCH#*:}
+		branch=${branch%%:*}
+
+		if test -z "$branch"; then
+			version="${version}+${GIT_EXPORT_COMMIT}"
+		else
+			version="${version}+${branch}-${GIT_EXPORT_COMMIT}"
+		fi
+	fi
+	;;
+esac
+
+version=${version#v}
+if test -z "$version"; then
+	echo "unable to determine version. bailing" >&2
+	exit 1
+fi
+
+printf '%s' "$version" | tr -d "$nl"

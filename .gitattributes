@@ -1,0 +1,5 @@
+# Include version information on `git archive'
+/scripts/gen-version export-subst
+
+# enforce LF on checkout
+* text=auto eol=lf
