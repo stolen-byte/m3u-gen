@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 core_sources = files(
+	'dir-iterator.c',
+	'dir.c',
 	'error.c',
 	'mem.c',
 	'strbuf.c',
