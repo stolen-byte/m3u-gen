@@ -36,3 +36,6 @@ to_lower(char ch)
 		ch = (char)((unsigned char)ch | 0x20);
 	return ch;
 }
+
+int
+strnatcmp(const char a[restrict static 1], const char b[restrict static 1]);

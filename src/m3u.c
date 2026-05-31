@@ -2,6 +2,7 @@
 #include "m3u.h"
 #include "compat/string.h"
 #include "mem.h"
+#include "string-utils.h"
 
 // =============================================================================
 typedef struct {
@@ -14,7 +15,7 @@ typedef struct {
 static int
 cmp_url(m3u_entry* a, m3u_entry* b)
 {
-	return strcmp(a->url, b->url);
+	return strnatcmp(a->url, b->url);
 }
 
 static void

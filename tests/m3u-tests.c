@@ -40,9 +40,9 @@ TEST(m3u_sort)
 	require(list->len == 7);
 	require_streq(list->entries[0]->url, "a.mkv");
 	require_streq(list->entries[1]->url, "b01.mkv");
-	require_streq(list->entries[2]->url, "b03.mkv");
-	require_streq(list->entries[3]->url, "b10.mkv");
-	require_streq(list->entries[4]->url, "b2.mkv");
+	require_streq(list->entries[2]->url, "b2.mkv");
+	require_streq(list->entries[3]->url, "b03.mkv");
+	require_streq(list->entries[4]->url, "b10.mkv");
 	require_streq(list->entries[5]->url, "b21.mkv");
 	require_streq(list->entries[6]->url, "c.mkv");
 
