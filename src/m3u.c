@@ -11,6 +11,12 @@ typedef struct {
 } list_impl;
 
 // =============================================================================
+static int
+cmp_url(m3u_entry* a, m3u_entry* b)
+{
+	return strcmp(a->url, b->url);
+}
+
 static void
 grow_list(register list_impl* impl, size_t n)
 {
@@ -95,4 +101,25 @@ m3u_write(const m3u_list list[restrict static 1], FILE* restrict out)
 	}
 
 	fflush(out);
+}
+
+void
+m3u_sort(m3u_list list[static 1])
+{
+	if (list->len < 1)
+		return;
+
+	// simple insertion sort, large playlists are unlikely, and:
+	// - quicksort has partitioning overhead, and loses out to this
+	// - mergesort is stable, but has extra memory overhead & complexity
+	register m3u_entry** arr = list->entries;
+	for (register size_t i = 1; i < list->len; ++i) {
+		register m3u_entry* k = arr[i];
+		register size_t j = i;
+		while (j > 0 && cmp_url(arr[j - 1], k) > 0) {
+			swap(arr[j], arr[j - 1]);
+			--j;
+		}
+		arr[j] = k;
+	}
 }

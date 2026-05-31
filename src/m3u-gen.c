@@ -97,6 +97,7 @@ generate_playlist(m3u_list list[restrict static 1],
 			return false;
 	}
 
+	m3u_sort(list);
 	return true;
 }
 

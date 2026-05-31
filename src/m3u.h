@@ -30,3 +30,6 @@ m3u_pop(m3u_list list[restrict static 1]);
 
 void
 m3u_write(const m3u_list list[restrict static 1], FILE* restrict out);
+
+void
+m3u_sort(m3u_list list[static 1]);
