@@ -113,6 +113,9 @@ m3u_write(const m3u_list list[restrict static 1], FILE* restrict out)
 	// entries
 	for (size_t i = 0; i < list->len; ++i) {
 		register m3u_entry* entry = list->entries[i];
+		const char* title = metadata_get(&entry->metadata, MID_TITLE);
+		if (title)
+			fprintf(out, "#EXTINF:%.3f,%s\n", entry->duration, title);
 		fprintf(out, "%s\n", entry->url);
 	}
 

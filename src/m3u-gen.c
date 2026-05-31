@@ -15,6 +15,8 @@ typedef struct {
 	FILE* restrict out;
 	const char* title;
 	di_flags flags;
+	bool aggressive;
+	bool meta;
 } options;
 
 // =============================================================================
@@ -27,6 +29,8 @@ usage(int status, const char* name)
 	       "options:\n"
 	       "  -o PATH    output file. (default: stdout)\n"
 	       "  -t TITLE   playlist title.\n"
+	       "  -n         skip reading metadata.\n"
+	       "  -A         be more aggressive at scanning metadata.\n"
 	       "  -r         recurse into subdirectories.\n"
 	       "  -p         pedantic mode (stop on first error/warning).\n"
 	       "  -h         display this help and exit.\n"
@@ -36,10 +40,21 @@ usage(int status, const char* name)
 }
 
 static bool
-add_file(m3u_list list[restrict static 1], const char path[restrict static 1])
+add_file(m3u_list list[restrict static 1],
+         const char path[restrict static 1],
+         const options opts[restrict static 1])
 {
 	m3u_entry* entry = m3u_push(list, path);
-	return entry != NULL;
+	if (entry) {
+		if (opts->meta) {
+			if (!metadata_read(path, &entry->metadata, &entry->duration, opts->aggressive)) {
+				m3u_pop(list);
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
 }
 
 static bool
@@ -54,7 +69,7 @@ add_dir(m3u_list list[restrict static 1],
 	bool ret = true;
 	register bool pedantic = opts->flags & DIF_PEDANTIC;
 	while (dir_iterator_next(it)) {
-		if (!add_file(list, it->path.data) && pedantic) {
+		if (!add_file(list, it->path.data, opts) && pedantic) {
 			ret = false;
 			break;
 		}
@@ -88,7 +103,7 @@ generate_playlist(m3u_list list[restrict static 1],
 			if (S_ISDIR(st.st_mode))
 				ret = add_dir(list, url, opts);
 			else if (S_ISREG(st.st_mode))
-				ret = add_file(list, url);
+				ret = add_file(list, url, opts);
 			else
 				warn("skipping '%s': not a file/directory.", url);
 		}
@@ -107,13 +122,16 @@ main(int argc, char* argv[])
 	const char* outpath = NULL;
 	options opts = {
 	  .out = stdout,
+	  .meta = true,
 	};
 
 	int opt;
-	while ((opt = getopt(argc, argv, ":hVo:t:rp")) != -1) {
+	while ((opt = getopt(argc, argv, ":hVo:t:nArp")) != -1) {
 		switch (opt) {
 		case 'o': outpath = optarg; break;
 		case 't': opts.title = optarg; break;
+		case 'n': opts.meta = false; break;
+		case 'A': opts.aggressive = true; break;
 		case 'r': opts.flags |= DIF_RECURSIVE; break;
 		case 'p': opts.flags |= DIF_PEDANTIC; break;
 		case 'h': usage(EXIT_SUCCESS, basename(argv[0]));

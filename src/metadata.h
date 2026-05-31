@@ -48,3 +48,9 @@ metadata_find(metadata_list m[restrict static 1], const char name[restrict stati
 
 const char*
 metadata_enumerate(metadata_list m[restrict static 1], void* restrict* it);
+
+bool
+metadata_read(const char path[restrict static 1],
+              metadata_list out[restrict static 1],
+              double duration[restrict static 1],
+              bool aggressive);

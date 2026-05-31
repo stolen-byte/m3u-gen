@@ -76,7 +76,11 @@ if sys in ['cygwin', 'windows']
 	endif
 endif
 
-deps = []
+deps = [
+	dependency('libavformat', version: '>=60.16.100'),
+	dependency('libavcodec', version: '>=60.31.102'),
+	dependency('libavutil', version: '>=58.29.100'),
+]
 
 libm = cc.find_library('m', required: false)
 if libm.found()

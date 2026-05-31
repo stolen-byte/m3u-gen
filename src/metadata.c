@@ -4,6 +4,10 @@
 #include "hash.h"
 #include "mem.h"
 
+#include <libavformat/avformat.h>
+#include <libavutil/avutil.h>
+#include <libavutil/error.h>
+
 // =============================================================================
 struct metadata_entry {
 	uint64_t id;
@@ -11,6 +15,34 @@ struct metadata_entry {
 };
 
 // =============================================================================
+static void
+ffmpeg_error(int code, const char url[static 1])
+{
+	char err[AV_ERROR_MAX_STRING_SIZE];
+	av_strerror(code, err, sizeof(err));
+	warn("%s: %s", url, err);
+}
+
+static const AVStream*
+find_first_stream(const AVFormatContext ctx[restrict static 1])
+{
+	AVStream* ret = NULL;
+
+	for (unsigned int i = 0; i < ctx->nb_streams; ++i) {
+		register AVStream* cur = ctx->streams[i];
+		enum AVMediaType type = cur->codecpar->codec_type;
+
+		// prefer video stream
+		if (type == AVMEDIA_TYPE_VIDEO)
+			return cur;
+
+		if (!ret && type == AVMEDIA_TYPE_AUDIO)
+			ret = cur;
+	}
+
+	return ret;
+}
+
 void
 metadata_init(metadata_list m[static 1])
 {
@@ -101,4 +133,42 @@ metadata_enumerate(metadata_list m[restrict static 1], void* restrict* it)
 	}
 	*it = NULL;
 	return NULL;
+}
+
+bool
+metadata_read(const char path[restrict static 1],
+              metadata_list out[restrict static 1],
+              double duration[restrict static 1],
+              bool aggressive)
+{
+	AVFormatContext* ctx = NULL;
+	int code;
+
+	if ((code = avformat_open_input(&ctx, path, NULL, NULL)) != 0) {
+		ffmpeg_error(code, path);
+		return false;
+	}
+
+	if (aggressive) {
+		if ((code = avformat_find_stream_info(ctx, NULL)) < 0)
+			ffmpeg_error(code, path);
+	}
+
+	// prefer duration explicitly set in stream if available
+	int64_t iduration = ctx->duration;
+	const AVStream* stream = find_first_stream(ctx);
+	if (stream && (stream->duration != AV_NOPTS_VALUE))
+		iduration = stream->duration;
+
+	if (iduration != AV_NOPTS_VALUE)
+		*duration = ((double)iduration / AV_TIME_BASE);
+
+	const struct AVDictionaryEntry* tag = NULL;
+	while ((tag = av_dict_iterate(ctx->metadata, tag))) {
+		if (tag->value)
+			metadata_insert(out, tag->key, tag->value);
+	}
+
+	avformat_close_input(&ctx);
+	return true;
 }
