@@ -9,7 +9,10 @@ TEST(m3u_list)
 
 	require_streq(list->title, "testing");
 
-	require(m3u_push(list, "testfile.mkv") != NULL);
+	m3u_entry* e = m3u_push(list, "testfile.mkv");
+	require(e != NULL);
+	require_feq(e->duration, -1);
+
 	require(m3u_push(list, "testfile2.mkv") != NULL);
 	require(m3u_push(list, "testfile3.mkv") != NULL);
 	require(list->len == 3);

@@ -6,6 +6,7 @@ core_sources = files(
 	'hash.c',
 	'm3u.c',
 	'mem.c',
+	'metadata.c',
 	'strbuf.c',
 	'string-utils.c',
 )

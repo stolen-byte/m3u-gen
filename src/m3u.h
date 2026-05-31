@@ -1,12 +1,18 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #pragma once
 #include "common.h"
+#include "metadata.h"
 
 #include <stdio.h>
 
 // =============================================================================
+/**
+ * an unset duration is always -1
+ */
 typedef struct {
 	const char* url;
+	double duration;
+	metadata_list metadata;
 } m3u_entry;
 
 typedef struct {

@@ -40,6 +40,23 @@ grow_list(register list_impl* impl, size_t n)
 	}
 }
 
+static m3u_entry*
+init_entry(m3u_entry* restrict e, const char* restrict url)
+{
+	e->url = xstrdup(url);
+	e->duration = -1;
+	metadata_init(&e->metadata);
+	return e;
+}
+
+static void
+free_entry(m3u_entry* e)
+{
+	metadata_free(&e->metadata);
+	e->duration = -1;
+	xfree((void*)e->url);
+}
+
 m3u_list*
 m3u_create(const char* title, size_t size)
 {
@@ -72,9 +89,8 @@ m3u_push(m3u_list list[restrict static 1], const char url[restrict static 1])
 	register list_impl* impl = (list_impl*)list;
 
 	grow_list(impl, list->len + 1);
-	m3u_entry* entry = &impl->storage[list->len++];
 
-	entry->url = xstrdup(url);
+	m3u_entry* entry = init_entry(&impl->storage[list->len++], url);
 	list->entries[list->len - 1] = entry;
 
 	return entry;
@@ -83,8 +99,7 @@ m3u_push(m3u_list list[restrict static 1], const char url[restrict static 1])
 void
 m3u_pop(m3u_list list[restrict static 1])
 {
-	register m3u_entry* e = list->entries[--list->len];
-	xfree((void*)e->url);
+	free_entry(list->entries[--list->len]);
 }
 
 void

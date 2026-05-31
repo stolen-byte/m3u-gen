@@ -3,6 +3,7 @@ unit_tests = [
 	'dir-tests.c',
 	'hash-tests.c',
 	'm3u-tests.c',
+	'metadata-tests.c',
 	'strbuf-tests.c',
 	'string-utils-tests.c',
 ]
