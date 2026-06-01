@@ -14,6 +14,7 @@
 typedef struct {
 	FILE* restrict out;
 	const char* title;
+	const char* tformat;
 	di_flags flags;
 	bool aggressive;
 	bool meta;
@@ -29,6 +30,7 @@ usage(int status, const char* name)
 	       "options:\n"
 	       "  -o PATH    output file. (default: stdout)\n"
 	       "  -t TITLE   playlist title.\n"
+	       "  -T FORMAT  playlist entry title format string.\n"
 	       "  -n         skip reading metadata.\n"
 	       "  -A         be more aggressive at scanning metadata.\n"
 	       "  -r         recurse into subdirectories.\n"
@@ -51,6 +53,9 @@ add_file(m3u_list list[restrict static 1],
 				m3u_pop(list);
 				return false;
 			}
+
+			if (opts->tformat)
+				m3u_format_title(entry, opts->tformat);
 		}
 		return true;
 	}
@@ -126,10 +131,11 @@ main(int argc, char* argv[])
 	};
 
 	int opt;
-	while ((opt = getopt(argc, argv, ":hVo:t:nArp")) != -1) {
+	while ((opt = getopt(argc, argv, ":hVo:t:T:nArp")) != -1) {
 		switch (opt) {
 		case 'o': outpath = optarg; break;
 		case 't': opts.title = optarg; break;
+		case 'T': opts.tformat = optarg; break;
 		case 'n': opts.meta = false; break;
 		case 'A': opts.aggressive = true; break;
 		case 'r': opts.flags |= DIF_RECURSIVE; break;

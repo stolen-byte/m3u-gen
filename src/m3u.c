@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "m3u.h"
 #include "compat/string.h"
+#include "error.h"
 #include "mem.h"
 #include "string-utils.h"
 
@@ -46,12 +47,14 @@ init_entry(m3u_entry* restrict e, const char* restrict url)
 	e->url = xstrdup(url);
 	e->duration = -1;
 	metadata_init(&e->metadata);
+	strbuf_init(&e->title, 0);
 	return e;
 }
 
 static void
 free_entry(m3u_entry* e)
 {
+	strbuf_free(&e->title);
 	metadata_free(&e->metadata);
 	e->duration = -1;
 	xfree((void*)e->url);
@@ -113,7 +116,14 @@ m3u_write(const m3u_list list[restrict static 1], FILE* restrict out)
 	// entries
 	for (size_t i = 0; i < list->len; ++i) {
 		register m3u_entry* entry = list->entries[i];
-		const char* title = metadata_get(&entry->metadata, MID_TITLE);
+
+		const char* title;
+		if (entry->title.len) {
+			title = entry->title.data;
+		} else {
+			title = metadata_get(&entry->metadata, MID_TITLE);
+		}
+
 		if (title)
 			fprintf(out, "#EXTINF:%.3f,%s\n", entry->duration, title);
 		fprintf(out, "%s\n", entry->url);
@@ -141,4 +151,54 @@ m3u_sort(m3u_list list[static 1])
 		}
 		arr[j] = k;
 	}
+}
+
+void
+m3u_format_title(m3u_entry entry[restrict static 1], const char fmt[restrict static 1])
+{
+	strbuf* sb = &entry->title;
+	metadata_list* meta = &entry->metadata;
+	strbuf_resize(sb, 0);
+
+	if (!*fmt)
+		return;
+
+	const char* prev = fmt;
+	while (*prev) {
+		const char* p = strchr(prev, '%');
+		if (!p)
+			break;
+
+		strbuf_appendn(sb, (size_t)(p - prev), prev);
+
+		const char* value = NULL;
+		switch (*++p) {
+		case 'A': value = metadata_get(meta, MID_ALBUMARTIST); break;
+		case 'a': value = metadata_get(meta, MID_ARTIST); break;
+		case 'T': value = metadata_get(meta, MID_ALBUM); break;
+		case 't': value = metadata_get(meta, MID_TITLE); break;
+		case 'N': value = metadata_get(meta, MID_TOTALPARTS); break;
+		case 'e': value = metadata_get(meta, MID_EPISODE); break;
+		case 's': value = metadata_get(meta, MID_SEASON); break;
+		case 'v': value = metadata_get(meta, MID_VOLUME); break;
+		case 'c': value = metadata_get(meta, MID_CHAPTER); break;
+		case 'g': value = metadata_get(meta, MID_GENRE); break;
+		case 'n':
+			value = metadata_get(meta, MID_TRACK);
+			if (!value)
+				value = metadata_get(meta, MID_PARTNUMBER);
+			break;
+		case '%':  strbuf_add(sb, *p); break;
+		case '\0': die("expected format specifier at index %zu", (size_t)(p - fmt));
+		default:   die("unknown format specifier '%c'.", *p);
+		}
+
+		if (value)
+			strbuf_append(sb, value);
+
+		prev = ++p;
+	}
+
+	if (*prev)
+		strbuf_append(sb, prev);
 }

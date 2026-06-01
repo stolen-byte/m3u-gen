@@ -52,5 +52,55 @@ TEST(m3u_sort)
 	m3u_free(list);
 }
 
+TEST(m3u_format_title)
+{
+#define do_check(fmt, want)                \
+	do {                                     \
+		m3u_format_title(&entry, fmt);         \
+		require_streq(entry.title.data, want); \
+	} while (0)
+
+	m3u_entry entry = {0};
+	metadata_init(&entry.metadata);
+	strbuf_init(&entry.title, 256);
+	entry.url = "/some/path/testfile.mkv";
+
+	do_check("random", "random");
+
+	metadata_set(&entry.metadata, MID_ALBUMARTIST, "albumartist");
+	metadata_set(&entry.metadata, MID_ARTIST, "artist");
+	metadata_set(&entry.metadata, MID_ALBUM, "album");
+	metadata_set(&entry.metadata, MID_TITLE, "title");
+	metadata_set(&entry.metadata, MID_TOTALPARTS, "totalparts");
+	metadata_set(&entry.metadata, MID_TRACK, "track");
+	metadata_set(&entry.metadata, MID_EPISODE, "episode");
+	metadata_set(&entry.metadata, MID_SEASON, "season");
+	metadata_set(&entry.metadata, MID_VOLUME, "volume");
+	metadata_set(&entry.metadata, MID_CHAPTER, "chapter");
+	metadata_set(&entry.metadata, MID_GENRE, "genre");
+
+	do_check("%%", "%");
+	do_check("%%%%%%", "%%%");
+
+	do_check("%A", "albumartist");
+	do_check("%a", "artist");
+	do_check("%T", "album");
+	do_check("%t", "title");
+	do_check("%N", "totalparts");
+	do_check("%n", "track");
+	do_check("%e", "episode");
+	do_check("%s", "season");
+	do_check("%v", "volume");
+	do_check("%c", "chapter");
+	do_check("%g", "genre");
+
+	do_check("%s.%e: %t", "season.episode: title");
+
+	strbuf_free(&entry.title);
+	metadata_free(&entry.metadata);
+
+#undef do_check
+}
+
 // =============================================================================
-DECLARE_TESTS("m3u-tests", m3u_list, m3u_sort)
+DECLARE_TESTS("m3u-tests", m3u_list, m3u_sort, m3u_format_title)

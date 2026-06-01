@@ -2,6 +2,7 @@
 #pragma once
 #include "common.h"
 #include "metadata.h"
+#include "strbuf.h"
 
 #include <stdio.h>
 
@@ -12,6 +13,7 @@
 typedef struct {
 	const char* url;
 	double duration;
+	strbuf title;
 	metadata_list metadata;
 } m3u_entry;
 
@@ -39,3 +41,9 @@ m3u_write(const m3u_list list[restrict static 1], FILE* restrict out);
 
 void
 m3u_sort(m3u_list list[static 1]);
+
+/**
+ * set an entry's `title` from its metadata and a format string.
+ */
+void
+m3u_format_title(m3u_entry entry[restrict static 1], const char fmt[restrict static 1]);
