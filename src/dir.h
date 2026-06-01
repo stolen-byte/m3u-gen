@@ -19,12 +19,8 @@ is_dot_or_dotdot(const char* name)
 	return (name && name[0] == '.' && (name[1] == '\0' || (name[1] == '.' && name[2] == '\0')));
 }
 
-/**
- * same as `basename(3)` provided by <libgen.h> except with
- * support for dos paths
- */
 char*
-mg_basename(char* path);
+mg_basename(char* path, size_t len);
 
 #undef basename
-#define basename mg_basename
+#define basename(x) mg_basename(x, 0)

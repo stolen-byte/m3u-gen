@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "strbuf.h"
 #include "compat/string.h"
+#include "dir.h"
 #include "error.h"
 #include "mem.h"
 
@@ -158,4 +159,29 @@ void
 strbuf_swap(strbuf a[restrict static 1], strbuf b[restrict static 1])
 {
 	swap(*a, *b);
+}
+
+const char*
+strbuf_basename(strbuf sb[static 1])
+{
+	while (sb->len > 0 && is_dir_sep(sb->data[sb->len - 1]))
+		--sb->len;
+	sb->data[sb->len] = '\0';
+
+	return mg_basename(sb->data, sb->len);
+}
+
+void
+strbuf_strip_ext(strbuf sb[static 1])
+{
+	if (!sb->len)
+		return;
+
+	size_t i = sb->len - 1;
+	for (; i > 0 && !is_dir_sep(sb->data[i - 1]); --i) {
+		if (sb->data[i] == '.') {
+			strbuf_resize(sb, i);
+			return;
+		}
+	}
 }

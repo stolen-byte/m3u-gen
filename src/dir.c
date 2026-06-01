@@ -4,7 +4,7 @@
 
 // =============================================================================
 char*
-mg_basename(char* path)
+mg_basename(char* path, size_t len)
 {
 	if (UNLIKELY(!path || !*path)) {
 		// `basename(3)` is (imo) mis-specified, because it returns a non-const pointer
@@ -13,7 +13,10 @@ mg_basename(char* path)
 		return (char*)".";
 	}
 
-	size_t i = strlen(path) - 1;
+	if (!len)
+		len = strlen(path);
+
+	register size_t i = len - 1;
 	for (; i && is_dir_sep(path[i]); --i)
 		path[i] = '\0';
 

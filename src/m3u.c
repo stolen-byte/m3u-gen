@@ -156,8 +156,11 @@ m3u_sort(m3u_list list[static 1])
 void
 m3u_format_title(m3u_entry entry[restrict static 1], const char fmt[restrict static 1])
 {
+	strbuf buf;
 	strbuf* sb = &entry->title;
 	metadata_list* meta = &entry->metadata;
+
+	strbuf_init(&buf, PATH_MAX);
 	strbuf_resize(sb, 0);
 
 	if (!*fmt)
@@ -187,6 +190,15 @@ m3u_format_title(m3u_entry entry[restrict static 1], const char fmt[restrict sta
 			value = metadata_get(meta, MID_TRACK);
 			if (!value)
 				value = metadata_get(meta, MID_PARTNUMBER);
+			break;
+		case 'F':
+			strbuf_set(&buf, entry->url);
+			value = strbuf_basename(&buf);
+			break;
+		case 'f':
+			strbuf_set(&buf, entry->url);
+			strbuf_strip_ext(&buf);
+			value = strbuf_basename(&buf);
 			break;
 		case '%':  strbuf_add(sb, *p); break;
 		case '\0': die("expected format specifier at index %zu", (size_t)(p - fmt));

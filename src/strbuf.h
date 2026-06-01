@@ -58,3 +58,9 @@ strbuf_cmp(const strbuf a[restrict static 1], const strbuf b[restrict static 1])
 
 void
 strbuf_swap(strbuf a[restrict static 1], strbuf b[restrict static 1]);
+
+const char*
+strbuf_basename(strbuf sb[static 1]);
+
+void
+strbuf_strip_ext(strbuf sb[static 1]);

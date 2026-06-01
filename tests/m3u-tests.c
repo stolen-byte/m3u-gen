@@ -96,6 +96,9 @@ TEST(m3u_format_title)
 
 	do_check("%s.%e: %t", "season.episode: title");
 
+	do_check("%F", "testfile.mkv");
+	do_check("%f", "testfile");
+
 	strbuf_free(&entry.title);
 	metadata_free(&entry.metadata);
 

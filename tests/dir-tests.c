@@ -27,10 +27,10 @@ TEST(is_dot_or_dotdot)
 
 TEST(mg_basename)
 {
-#define dotest(path, want)                 \
-	do {                                     \
-		char buf[] = path;                     \
-		require_streq(mg_basename(buf), want); \
+#define dotest(path, want)                    \
+	do {                                        \
+		char buf[] = path;                        \
+		require_streq(mg_basename(buf, 0), want); \
 	} while (0)
 
 	dotest("", ".");

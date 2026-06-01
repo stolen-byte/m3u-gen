@@ -72,5 +72,34 @@ TEST(sb_format)
 	strbuf_free(&sb);
 }
 
+TEST(sb_strip_ext)
+{
+	strbuf sb;
+	strbuf_init(&sb, PATH_MAX);
+
+#define do_test(path, want)       \
+	do {                            \
+		strbuf_set(&sb, path);        \
+		strbuf_strip_ext(&sb);        \
+		require_streq(sb.data, want); \
+	} while (0)
+
+	do_test("", "");
+
+	do_test("/some/file.txt", "/some/file");
+	do_test("/some/file.a.txt", "/some/file.a");
+	do_test("/some/.file.a", "/some/.file");
+	do_test("/some.path/.file.a", "/some.path/.file");
+
+	do_test("/some/file", "/some/file");
+	do_test("somefile", "somefile");
+	do_test(".somefile", ".somefile");
+	do_test("/some/.file", "/some/.file");
+	do_test("/some.path/file", "/some.path/file");
+	do_test("/some.path/.file", "/some.path/.file");
+
+#undef do_test
+}
+
 // =============================================================================
-DECLARE_TESTS("strbuf-tests", sb_alloc, sb_reset, sb_append, sb_format)
+DECLARE_TESTS("strbuf-tests", sb_alloc, sb_reset, sb_append, sb_format, sb_strip_ext)
