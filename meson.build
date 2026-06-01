@@ -88,6 +88,7 @@ if libm.found()
 endif
 
 add_project_arguments(defs + cflags, language: 'c')
+add_project_link_arguments(['-Wno-free-nonheap-object'], language: 'c')
 
 # =============================================================================
 conf = configuration_data(
