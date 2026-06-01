@@ -7,6 +7,7 @@
 #include "error.h"
 #include "m3u.h"
 #include "strbuf.h"
+#include "string-utils.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -52,7 +53,7 @@ add_file(m3u_list list[restrict static 1],
 
 	m3u_entry* entry = m3u_push(list, strip ? path + 2 : path);
 	if (entry) {
-		if (opts->meta) {
+		if (opts->meta && !iends_with(path, ".m3u") && !iends_with(path, ".m3u8")) {
 			// bit of a hack, as we're not updating `len`
 			// hence we immediately `resize(0)` after use
 			strbuf_grow(scratch, PATH_MAX);
