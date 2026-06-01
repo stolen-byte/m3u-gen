@@ -60,6 +60,27 @@ free_entry(m3u_entry* e)
 	xfree((void*)e->url);
 }
 
+static const char*
+parse_tag(const char* restrict* p,
+          metadata_list* restrict meta,
+          strbuf* restrict buf,
+          const char* restrict fmt)
+{
+	const char* start = ++(*p);
+	const char* end = strchr(start, ')');
+
+	if (!end)
+		die("no matching ')' in format string '%s'", fmt);
+	if (end == start)
+		die("expected tag name in format string '%s'", fmt);
+
+	strbuf_resize(buf, 0);
+	strbuf_appendn(buf, (size_t)(end - start), start);
+	*p = end;
+
+	return metadata_find(meta, buf->data);
+}
+
 m3u_list*
 m3u_create(const char* title, size_t size)
 {
@@ -154,13 +175,22 @@ m3u_sort(m3u_list list[static 1])
 }
 
 void
-m3u_format_title(m3u_entry entry[restrict static 1], const char fmt[restrict static 1])
+m3u_format_title(m3u_entry entry[restrict static 1],
+                 const char fmt[restrict static 1],
+                 strbuf* restrict scratch)
 {
 	strbuf buf;
 	strbuf* sb = &entry->title;
 	metadata_list* meta = &entry->metadata;
 
-	strbuf_init(&buf, PATH_MAX);
+	strbuf_init(&buf, 0);
+	if (!scratch) {
+		strbuf_grow(&buf, PATH_MAX);
+		scratch = &buf;
+	} else {
+		strbuf_resize(scratch, 0);
+	}
+
 	strbuf_resize(sb, 0);
 
 	if (!*fmt)
@@ -176,6 +206,7 @@ m3u_format_title(m3u_entry entry[restrict static 1], const char fmt[restrict sta
 
 		const char* value = NULL;
 		switch (*++p) {
+		case '%': strbuf_add(sb, *p); break;
 		case 'A': value = metadata_get(meta, MID_ALBUMARTIST); break;
 		case 'a': value = metadata_get(meta, MID_ARTIST); break;
 		case 'T': value = metadata_get(meta, MID_ALBUM); break;
@@ -191,30 +222,28 @@ m3u_format_title(m3u_entry entry[restrict static 1], const char fmt[restrict sta
 			if (!value)
 				value = metadata_get(meta, MID_PARTNUMBER);
 			break;
+
+		// full filename
 		case 'F':
-			strbuf_set(&buf, entry->url);
-			value = strbuf_basename(&buf);
+			strbuf_set(scratch, entry->url);
+			value = strbuf_basename(scratch);
 			break;
+
+		// filename without extension
 		case 'f':
-			strbuf_set(&buf, entry->url);
-			strbuf_strip_ext(&buf);
-			value = strbuf_basename(&buf);
+			strbuf_set(scratch, entry->url);
+			strbuf_strip_ext(scratch);
+			value = strbuf_basename(scratch);
 			break;
-		case '(': {
-			const char* tag_end = strchr(++p, ')');
-			if (!tag_end)
-				die("no matching ')' in format string '%s'", fmt);
-			if (tag_end == p)
-				die("expected tag name in format string '%s'", fmt);
-			strbuf_resize(&buf, 0);
-			strbuf_appendn(&buf, (size_t)(tag_end - p), p);
-			value = metadata_find(meta, buf.data);
+
+		// custom tag
+		case '(':
+			value = parse_tag(&p, meta, scratch, fmt);
 			if (!value)
-				warn("no tag found with name '%s'", buf.data);
-			p = tag_end;
+				warn("no tag found with name '%s'", scratch->data);
 			break;
-		}
-		case '%':  strbuf_add(sb, *p); break;
+
+		// errors
 		case '\0': die("expected format specifier in '%s' at index %zu", fmt, (size_t)(p - fmt));
 		default:   die("unknown format specifier '%c' in string '%s'.", *p, fmt);
 		}
@@ -227,4 +256,6 @@ m3u_format_title(m3u_entry entry[restrict static 1], const char fmt[restrict sta
 
 	if (*prev)
 		strbuf_append(sb, prev);
+
+	strbuf_free(&buf);
 }

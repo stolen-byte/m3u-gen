@@ -6,6 +6,7 @@
 #include "dir.h"
 #include "error.h"
 #include "m3u.h"
+#include "strbuf.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -44,7 +45,8 @@ usage(int status, const char* name)
 static bool
 add_file(m3u_list list[restrict static 1],
          const char path[restrict static 1],
-         const options opts[restrict static 1])
+         const options opts[restrict static 1],
+         strbuf scratch[restrict static 1])
 {
 	m3u_entry* entry = m3u_push(list, path);
 	if (entry) {
@@ -55,7 +57,7 @@ add_file(m3u_list list[restrict static 1],
 			}
 
 			if (opts->tformat)
-				m3u_format_title(entry, opts->tformat);
+				m3u_format_title(entry, opts->tformat, scratch);
 		}
 		return true;
 	}
@@ -65,7 +67,8 @@ add_file(m3u_list list[restrict static 1],
 static bool
 add_dir(m3u_list list[restrict static 1],
         const char path[restrict static 1],
-        const options opts[restrict static 1])
+        const options opts[restrict static 1],
+        strbuf scratch[restrict static 1])
 {
 	dir_iterator* it = dir_iterator_begin(path, opts->flags);
 	if (UNLIKELY(!it))
@@ -74,7 +77,7 @@ add_dir(m3u_list list[restrict static 1],
 	bool ret = true;
 	register bool pedantic = opts->flags & DIF_PEDANTIC;
 	while (dir_iterator_next(it)) {
-		if (!add_file(list, it->path.data, opts) && pedantic) {
+		if (!add_file(list, it->path.data, opts, scratch) && pedantic) {
 			ret = false;
 			break;
 		}
@@ -91,6 +94,9 @@ generate_playlist(m3u_list list[restrict static 1],
                   const options opts[restrict static 1])
 {
 	struct stat st;
+	strbuf scratch;
+
+	strbuf_init(&scratch, PATH_MAX);
 
 	for (size_t i = 0; i < n; ++i) {
 		const char* url = urls[i];
@@ -106,9 +112,9 @@ generate_playlist(m3u_list list[restrict static 1],
 			}
 		} else {
 			if (S_ISDIR(st.st_mode))
-				ret = add_dir(list, url, opts);
+				ret = add_dir(list, url, opts, &scratch);
 			else if (S_ISREG(st.st_mode))
-				ret = add_file(list, url, opts);
+				ret = add_file(list, url, opts, &scratch);
 			else
 				warn("skipping '%s': not a file/directory.", url);
 		}
@@ -118,6 +124,7 @@ generate_playlist(m3u_list list[restrict static 1],
 	}
 
 	m3u_sort(list);
+	strbuf_free(&scratch);
 	return true;
 }
 

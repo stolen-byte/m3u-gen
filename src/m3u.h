@@ -46,4 +46,6 @@ m3u_sort(m3u_list list[static 1]);
  * set an entry's `title` from its metadata and a format string.
  */
 void
-m3u_format_title(m3u_entry entry[restrict static 1], const char fmt[restrict static 1]);
+m3u_format_title(m3u_entry entry[restrict static 1],
+                 const char fmt[restrict static 1],
+                 strbuf* restrict scratch);

@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 #include "m3u.h"
+#include "strbuf.h"
 #include "testing.h"
 
 // =============================================================================
@@ -54,10 +55,13 @@ TEST(m3u_sort)
 
 TEST(m3u_format_title)
 {
-#define do_check(fmt, want)                \
-	do {                                     \
-		m3u_format_title(&entry, fmt);         \
-		require_streq(entry.title.data, want); \
+	strbuf scratch;
+	strbuf_init(&scratch, PATH_MAX);
+
+#define do_check(fmt, want)                  \
+	do {                                       \
+		m3u_format_title(&entry, fmt, &scratch); \
+		require_streq(entry.title.data, want);   \
 	} while (0)
 
 	m3u_entry entry = {0};
