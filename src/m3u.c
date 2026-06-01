@@ -200,9 +200,23 @@ m3u_format_title(m3u_entry entry[restrict static 1], const char fmt[restrict sta
 			strbuf_strip_ext(&buf);
 			value = strbuf_basename(&buf);
 			break;
+		case '(': {
+			const char* tag_end = strchr(++p, ')');
+			if (!tag_end)
+				die("no matching ')' in format string '%s'", fmt);
+			if (tag_end == p)
+				die("expected tag name in format string '%s'", fmt);
+			strbuf_resize(&buf, 0);
+			strbuf_appendn(&buf, (size_t)(tag_end - p), p);
+			value = metadata_find(meta, buf.data);
+			if (!value)
+				warn("no tag found with name '%s'", buf.data);
+			p = tag_end;
+			break;
+		}
 		case '%':  strbuf_add(sb, *p); break;
-		case '\0': die("expected format specifier at index %zu", (size_t)(p - fmt));
-		default:   die("unknown format specifier '%c'.", *p);
+		case '\0': die("expected format specifier in '%s' at index %zu", fmt, (size_t)(p - fmt));
+		default:   die("unknown format specifier '%c' in string '%s'.", *p, fmt);
 		}
 
 		if (value)
