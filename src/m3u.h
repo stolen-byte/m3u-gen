@@ -40,7 +40,13 @@ void
 m3u_write(const m3u_list list[restrict static 1], FILE* restrict out);
 
 void
-m3u_sort(m3u_list list[static 1]);
+m3u_sort(m3u_list list[static 1], int mode);
+
+int
+m3u_get_sortmode(const char name[static 1]);
+
+const char*
+m3u_entry_title(const m3u_entry entry[static 1]);
 
 /**
  * set an entry's `title` from its metadata and a format string.

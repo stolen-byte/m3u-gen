@@ -18,6 +18,7 @@ typedef struct {
 	const char* title;
 	const char* tformat;
 	di_flags flags;
+	int sortmode;
 	bool aggressive;
 	bool meta;
 } options;
@@ -31,6 +32,7 @@ usage(int status, const char* name)
 	       "\n"
 	       "options:\n"
 	       "  -o PATH    output file. (default: stdout)\n"
+	       "  -s MODE    sort mode, one of 'url', 'title', 'duration' (default: url).\n"
 	       "  -t TITLE   playlist title.\n"
 	       "  -T FORMAT  playlist entry title format string.\n"
 	       "  -n         skip reading metadata.\n"
@@ -135,7 +137,7 @@ generate_playlist(m3u_list list[restrict static 1],
 			return false;
 	}
 
-	m3u_sort(list);
+	m3u_sort(list, opts->sortmode);
 	strbuf_free(&scratch);
 	return true;
 }
@@ -150,9 +152,14 @@ main(int argc, char* argv[])
 	};
 
 	int opt;
-	while ((opt = getopt(argc, argv, ":hVo:t:T:nArp")) != -1) {
+	while ((opt = getopt(argc, argv, ":hVo:s:t:T:nArp")) != -1) {
 		switch (opt) {
 		case 'o': outpath = optarg; break;
+		case 's':
+			opts.sortmode = m3u_get_sortmode(optarg);
+			if (opts.sortmode < 0)
+				die("invalid sort mode '%s'", optarg);
+			break;
 		case 't': opts.title = optarg; break;
 		case 'T': opts.tformat = optarg; break;
 		case 'n': opts.meta = false; break;

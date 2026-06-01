@@ -39,7 +39,7 @@ TEST(m3u_sort)
 	m3u_push(list, "b21.mkv");
 	m3u_push(list, "b2.mkv");
 
-	m3u_sort(list);
+	m3u_sort(list, -1);
 
 	require(list->len == 7);
 	require_streq(list->entries[0]->url, "a.mkv");

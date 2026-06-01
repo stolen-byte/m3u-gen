@@ -1,22 +1,73 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
-#include "m3u.h"
 #include "compat/string.h"
 #include "error.h"
+#include "hash.h"
+#include "m3u.h"
 #include "mem.h"
 #include "string-utils.h"
 
 // =============================================================================
+typedef int (*sortcmp)(m3u_entry*, m3u_entry*);
+
 typedef struct {
 	m3u_list base;
 	m3u_entry* storage;
 	size_t cap;
 } list_impl;
 
+typedef struct {
+	uint64_t id;
+	sortcmp cmp;
+} sortmode;
+
 // =============================================================================
+// clang-format off
+static int cmp_duration(m3u_entry* restrict, m3u_entry* restrict);
+static int cmp_title(m3u_entry* restrict, m3u_entry* restrict);
+static int cmp_url(m3u_entry* restrict, m3u_entry* restrict);
+// clang-format on
+
+#define SM_URL      0
+#define SM_TITLE    1
+#define SM_DURATION 2
+
+static sortmode g_sortmodes[] = {
+  [SM_URL] = {0xd82be2186b193788, cmp_url     },
+  [SM_TITLE] = {MID_TITLE,          cmp_title   },
+  [SM_DURATION] = {0xff9e2e8232a995f9, cmp_duration},
+};
+
+// =============================================================================
+static int
+cmp_duration(m3u_entry* restrict a, m3u_entry* restrict b)
+{
+	double da = a->duration;
+	double db = b->duration;
+	if (da < db)
+		return -1;
+	if (da > db)
+		return 1;
+	return 0;
+}
+
 static int
 cmp_url(m3u_entry* a, m3u_entry* b)
 {
 	return strnatcmp(a->url, b->url);
+}
+
+static int
+cmp_title(m3u_entry* a, m3u_entry* b)
+{
+	const char* ta = m3u_entry_title(a);
+	const char* tb = m3u_entry_title(b);
+	if (ta && !tb)
+		return -1;
+	if (!ta && tb)
+		return 1;
+	if (!ta && !tb)
+		return 0;
+	return strnatcmp(ta, tb);
 }
 
 static void
@@ -138,15 +189,10 @@ m3u_write(const m3u_list list[restrict static 1], FILE* restrict out)
 	for (size_t i = 0; i < list->len; ++i) {
 		register m3u_entry* entry = list->entries[i];
 
-		const char* title;
-		if (entry->title.len) {
-			title = entry->title.data;
-		} else {
-			title = metadata_get(&entry->metadata, MID_TITLE);
-		}
-
+		const char* title = m3u_entry_title(entry);
 		if (title)
 			fprintf(out, "#EXTINF:%.3f,%s\n", entry->duration, title);
+
 		fprintf(out, "%s\n", entry->url);
 	}
 
@@ -154,10 +200,16 @@ m3u_write(const m3u_list list[restrict static 1], FILE* restrict out)
 }
 
 void
-m3u_sort(m3u_list list[static 1])
+m3u_sort(m3u_list list[static 1], int mode)
 {
+	assert(mode < (int)ARRAYSIZE(g_sortmodes));
+
 	if (list->len < 1)
 		return;
+	if (mode == -1)
+		mode = SM_URL;
+
+	sortcmp cmp = g_sortmodes[mode].cmp;
 
 	// simple insertion sort, large playlists are unlikely, and:
 	// - quicksort has partitioning overhead, and loses out to this
@@ -166,12 +218,31 @@ m3u_sort(m3u_list list[static 1])
 	for (register size_t i = 1; i < list->len; ++i) {
 		register m3u_entry* k = arr[i];
 		register size_t j = i;
-		while (j > 0 && cmp_url(arr[j - 1], k) > 0) {
+		while (j > 0 && cmp(arr[j - 1], k) > 0) {
 			swap(arr[j], arr[j - 1]);
 			--j;
 		}
 		arr[j] = k;
 	}
+}
+
+int
+m3u_get_sortmode(const char name[static 1])
+{
+	uint64_t id = strhash(name);
+	for (size_t i = 0; i < ARRAYSIZE(g_sortmodes); ++i) {
+		if (g_sortmodes[i].id == id)
+			return (int)i;
+	}
+	return -1;
+}
+
+const char*
+m3u_entry_title(const m3u_entry entry[static 1])
+{
+	if (entry->title.len)
+		return entry->title.data;
+	return metadata_get(&entry->metadata, MID_TITLE);
 }
 
 void
