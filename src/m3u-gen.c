@@ -51,7 +51,16 @@ add_file(m3u_list list[restrict static 1],
 	m3u_entry* entry = m3u_push(list, path);
 	if (entry) {
 		if (opts->meta) {
-			if (!metadata_read(path, &entry->metadata, &entry->duration, opts->aggressive)) {
+			// bit of a hack, as we're not updating `len`
+			// hence we immediately `resize(0)` after use
+			strbuf_grow(scratch, PATH_MAX);
+			if (!realpath(path, scratch->data))
+				edie("%s", path);
+
+			bool result = metadata_read(scratch->data, &entry->metadata, &entry->duration, opts->aggressive);
+			strbuf_resize(scratch, 0);
+
+			if (!result) {
 				m3u_pop(list);
 				return false;
 			}

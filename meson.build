@@ -99,6 +99,7 @@ conf = configuration_data(
 symbols = [
 	['strlcpy', '#include <string.h>'],
 	['lstat', '#include <sys/stat.h>'],
+	['realpath', '#include <stdlib.h>'],
 ]
 
 compat_sources = []

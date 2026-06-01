@@ -26,3 +26,4 @@
 
 #mesondefine HAVE_STRLCPY
 #mesondefine HAVE_LSTAT
+#mesondefine HAVE_REALPATH

@@ -57,3 +57,8 @@
 		memcpy(_aptr, _bptr, sizeof(a));                                  \
 		memcpy(_bptr, _swapbuf, sizeof(a));                               \
 	} while (0)
+
+#ifndef HAVE_REALPATH
+char*
+realpath(const char* restrict name, char resolved[restrict PATH_MAX]);
+#endif
