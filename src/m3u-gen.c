@@ -48,7 +48,9 @@ add_file(m3u_list list[restrict static 1],
          const options opts[restrict static 1],
          strbuf scratch[restrict static 1])
 {
-	m3u_entry* entry = m3u_push(list, path);
+	bool strip = (path[0] == '.' && is_dir_sep(path[1]));
+
+	m3u_entry* entry = m3u_push(list, strip ? path + 2 : path);
 	if (entry) {
 		if (opts->meta) {
 			// bit of a hack, as we're not updating `len`
