@@ -93,7 +93,7 @@ metadata_insert(metadata_list m[restrict static 1],
 }
 
 const char*
-metadata_get(metadata_list m[static 1], uint64_t id)
+metadata_get(const metadata_list m[static 1], uint64_t id)
 {
 	register int min = 0;
 	register int max = (int)m->len; // len is limited by INT_MAX in `metadata_insert`
@@ -116,7 +116,7 @@ metadata_get(metadata_list m[static 1], uint64_t id)
 }
 
 const char*
-metadata_find(metadata_list m[restrict static 1], const char name[restrict static 1])
+metadata_find(const metadata_list m[restrict static 1], const char name[restrict static 1])
 {
 	if (!m->len)
 		return NULL;
@@ -124,7 +124,7 @@ metadata_find(metadata_list m[restrict static 1], const char name[restrict stati
 }
 
 const char*
-metadata_enumerate(metadata_list m[restrict static 1], void* restrict* it)
+metadata_enumerate(const metadata_list m[restrict static 1], void* restrict* it)
 {
 	for (size_t i = (size_t)*it; i < m->len; ++i) {
 		const metadata_entry* e = &m->entries[i];

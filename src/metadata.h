@@ -42,13 +42,13 @@ metadata_insert(metadata_list m[restrict static 1],
                 const char value[restrict static 1]);
 
 const char*
-metadata_get(metadata_list m[static 1], uint64_t id);
+metadata_get(const metadata_list m[static 1], uint64_t id);
 
 const char*
-metadata_find(metadata_list m[restrict static 1], const char name[restrict static 1]);
+metadata_find(const metadata_list m[restrict static 1], const char name[restrict static 1]);
 
 const char*
-metadata_enumerate(metadata_list m[restrict static 1], void* restrict* it);
+metadata_enumerate(const metadata_list m[restrict static 1], void* restrict* it);
 
 bool
 metadata_read(const char path[restrict static 1],
