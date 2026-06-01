@@ -13,6 +13,7 @@ typedef struct {
 
 // =============================================================================
 #define MID_TRACK       0x186bc01dd18f46da // TRACK
+#define MID_YEAR        0x4b24707de9ee2fce // YEAR
 #define MID_EPISODE     0x5513e47e7baeec90 // EPISODE
 #define MID_PARTNUMBER  0x60cc53cfd65910d2 // PART_NUMBER
 #define MID_GENRE       0x8807ba881b8bca2e // GENRE

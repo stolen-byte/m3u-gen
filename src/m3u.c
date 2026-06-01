@@ -217,6 +217,7 @@ m3u_format_title(m3u_entry entry[restrict static 1],
 		case 'v': value = metadata_get(meta, MID_VOLUME); break;
 		case 'c': value = metadata_get(meta, MID_CHAPTER); break;
 		case 'g': value = metadata_get(meta, MID_GENRE); break;
+		case 'Y': value = metadata_get(meta, MID_YEAR); break;
 		case 'n':
 			value = metadata_get(meta, MID_TRACK);
 			if (!value)

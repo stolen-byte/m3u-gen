@@ -82,6 +82,7 @@ TEST(m3u_format_title)
 	metadata_set(&entry.metadata, MID_VOLUME, "volume");
 	metadata_set(&entry.metadata, MID_CHAPTER, "chapter");
 	metadata_set(&entry.metadata, MID_GENRE, "genre");
+	metadata_set(&entry.metadata, MID_YEAR, "year");
 
 	do_check("%%", "%");
 	do_check("%%%%%%", "%%%");
@@ -97,6 +98,7 @@ TEST(m3u_format_title)
 	do_check("%v", "volume");
 	do_check("%c", "chapter");
 	do_check("%g", "genre");
+	do_check("%Y", "year");
 
 	do_check("%s.%e: %t", "season.episode: title");
 
