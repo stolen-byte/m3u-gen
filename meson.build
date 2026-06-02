@@ -131,6 +131,10 @@ if get_option('build-tests')
 	subdir('tests')
 endif
 
+if get_option('build-docs')
+	subdir('docs')
+endif
+
 # =============================================================================
 summary(
 	{

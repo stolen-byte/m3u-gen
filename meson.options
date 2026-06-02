@@ -1,1 +1,2 @@
 option('build-tests', description: 'build unit tests', type: 'boolean', value: true)
+option('build-docs', description: 'build documentation & manpages', type: 'boolean', value: true)

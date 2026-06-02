@@ -1,0 +1,8 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+== Bugs
+
+See the *m3u-gen* issue tracker: https://github.com/stolen-byte/m3u-gen/issues
+
+== Resources
+
+Git source respository on GitHub: https://github.com/stolen-byte/m3u-gen

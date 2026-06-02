@@ -1,0 +1,31 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+== Format Strings [[format-strings]]
+
+A valid format string is composed of ordinary characters (except %) which are copied unchanged,
+and placeholder specifiers of the form `%X`, where `X` is one of the special characters listed in the table below.
+
+If none of the built-in placeholders cover your use, you can instead insert a custom tag by including its
+name between a pair of `(` & `)` characters, after the `%`, such as `%(mytagname)`, where `mytagname` will
+be looked up within each entry's tags. (note that, tag names are always case-incensitive).
+
+=== Placeholder Specifiers
+
+[frame=none,stripes=even]
+|===
+| |Description |Supported Tags
+|*%* |Literal '%' |
+|*A* |Album Artist |ALBUMARTIST
+|*a* |Artist |ARTIST
+|*T* |Album Name |ALBUM
+|*t* |Title |TITLE
+|*N* |Total Parts |TOTALPARTS
+|*e* |Episode # |EPISODE
+|*s* |Season # |SEASON
+|*v* |Volume # |VOLUME
+|*c* |Chapter |CHAPTER
+|*g* |Genre |GENRE
+|*Y* |Year |YEAR
+|*n* |Track # / Part # | TRACK, PARTNUMBER
+|*F* |Full filename part of entry url |
+|*f* |Filename part of entry url without extension |
+|===

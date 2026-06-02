@@ -1,0 +1,65 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+== Synopsis
+
+*m3u-gen* [_OPTION_...] _URL_...
+
+== Description
+
+**m3u-gen** is a command-line tool for generating m3u8 playlists for a list of file/directory/urls.
+
+_URL_ can be any number of directory/urls, or any file readable by ffmpeg. Only local files will be queried
+for metadata, and file paths are used as-is (eg: relative vs absolute), so keep this in mind when redirecting
+the output to a file (or using the `-o` option).
+
+It is recommended to either use absolute paths, or run the program from the same directory you
+intend to store the resulting playlist in.
+
+== Options
+
+*-o* _PATH_::
+	output to _PATH_ instead of stdout.
+
+*-s* _MODE_::
+	sorting mode to use, (default: none).
++
+valid values are:
++
+[subs=+quotes]
+----
+*url*       sort by url/path
+*title*     sort by title metadata
+*duration*  sort by duration
+----
+
+*-t* _TITLE_::
+	set playlist title to _TITLE_.
+
+*-T* _FORMAT_::
+	format string to use for playlist entry titles.
++
+See <<format-strings>> section.
+
+*-n*::
+	Skip querying file metadata.
++
+NOTE: this will prevent the output of `#EXTINF` lines.
+
+*-A*::
+	be more aggressive when scanning metadata.
+	this is sometimes necessary for filetypes which don't store
+	much metadata in headers, such as MPEG.
+
+*-r*::
+	Recurse into subdirectories.
+
+*-p*::
+	Stop on first error encountered.
++
+By default, errors/warnings will be printed, but the program will continue
+unless the error is fatal, this forces the program to exit instead.
+
+*-h*::
+	Display program usage information and exit.
+
+*-V*::
+	Display program version information and exit.
