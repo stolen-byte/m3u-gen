@@ -1,0 +1,25 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+= m3u-gen
+StolenByte
+:toc:
+:source-highlighter: rouge
+:rouge-style: github
+:title-page:
+
+A command line tool for generating m3u8 playlists from a list of file/directory/urls.
+
+include::includes/usage.adoc[]
+
+<<<
+
+include::includes/format-string.adoc[]
+
+<<<
+
+== Links
+
+include::includes/links.adoc[leveloffset=+1]
+
+<<<
+
+include::includes/license.adoc[]

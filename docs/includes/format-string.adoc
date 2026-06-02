@@ -10,7 +10,7 @@ be looked up within each entry's tags. (note that, tag names are always case-inc
 
 === Placeholder Specifiers
 
-[frame=none,stripes=even]
+[%header,frame=none,stripes=even,width=65%,role=center]
 |===
 | |Description |Supported Tags
 |*%* |Literal '%' |

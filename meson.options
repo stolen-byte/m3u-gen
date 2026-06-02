@@ -1,2 +1,17 @@
 option('build-tests', description: 'build unit tests', type: 'boolean', value: true)
 option('build-docs', description: 'build documentation & manpages', type: 'boolean', value: true)
+
+option(
+	'docdir',
+	description: 'where to install documentation to. Defaults to <datadir>/doc/m3u-gen',
+	type: 'string',
+	value: '',
+)
+
+option(
+	'docs',
+	description: 'which documentation formats to build & install',
+	type: 'array',
+	choices: ['man', 'pdf', 'html'],
+	value: ['man', 'pdf', 'html'],
+)
